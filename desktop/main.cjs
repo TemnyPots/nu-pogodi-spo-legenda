@@ -9,7 +9,7 @@ app.whenReady().then(async()=>{
  await fs.mkdir(app.getPath('userData'),{recursive:true});
  const api=createApi(path.join(app.getPath('userData'),'records.json'));
  const ui=path.join(__dirname,'ui');
- const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2'};
+ const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2','.wav':'audio/wav'};
  const loaded=[];
  protocol.handle('legenda',async request=>{
   const url=new URL(request.url);
@@ -21,13 +21,17 @@ app.whenReady().then(async()=>{
   try{const bytes=await fs.readFile(file);loaded.push(relative);return new Response(bytes,{headers:{'Content-Type':mime[path.extname(file)]||'application/octet-stream'}})}catch{return new Response('Not found',{status:404})}
  });
  session.defaultSession.setPermissionRequestHandler((_web,_permission,callback)=>callback(false));
- const win=new BrowserWindow({width:1200,height:920,minWidth:600,minHeight:650,show:!smoke,autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true}});
+ const win=new BrowserWindow({width:1200,height:920,minWidth:600,minHeight:650,show:false,fullscreen:true,backgroundColor:'#f4f7ff',autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
+ win.once('ready-to-show',()=>{if(!smoke)win.show()});
+ win.webContents.on('before-input-event',(event,input)=>{
+  if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.alt&&input.key==='Enter'))){event.preventDefault();win.setFullScreen(!win.isFullScreen())}
+ });
  win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
  win.webContents.on('will-navigate',(event,url)=>{if(new URL(url).origin!==new URL('legenda://game').origin)event.preventDefault()});
  if(smoke){
   const errors=[];
   win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message)});
-  win.webContents.on('did-finish-load',()=>setTimeout(async()=>{await fs.writeFile(path.join(app.getPath('temp'),'legenda-smoke-result.json'),JSON.stringify({loaded,errors}));app.exit(errors.length?1:0)},2000));
+  win.webContents.on('did-finish-load',()=>setTimeout(async()=>{await fs.writeFile(path.join(app.getPath('temp'),'legenda-smoke-result.json'),JSON.stringify({loaded,errors,fullscreen:win.isFullScreen()}));app.exit(errors.length?1:0)},6500));
  }
  await win.loadURL('legenda://game/index.html');
 });
