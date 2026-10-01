@@ -7,13 +7,15 @@ import {Engine} from "@/lib/game-engine";
 import {ChipAudio} from "@/lib/chip-audio";
 type Stage="menu"|"game"|"paused"|"over"|"leaderboard";
 type Row={nickname:string;score:number};
-export default function Home({offline=false}:{offline?:boolean}){
+export default function Home({offline=false,desktopPaused=false}:{offline?:boolean;desktopPaused?:boolean}){
  const [nick,setNick]=useState(""),[stage,setStage]=useState<Stage>("menu"),[muted,setMuted]=useState(false),[busy,setBusy]=useState(false),[error,setError]=useState(""),[rows,setRows]=useState<Row[]>([]),[saved,setSaved]=useState(false),[soundReady,setSoundReady]=useState(false),[,refresh]=useState(0);
  const audio=useRef<ChipAudio|null>(null),engine=useRef<Engine|null>(null),run=useRef(""),ended=useRef(false),activeStage=useRef(stage);activeStage.current=stage;
  const getAudio=()=>{if(!audio.current)audio.current=new ChipAudio();return audio.current};
  const unlock=async()=>{const a=getAudio();try{await a.unlock();setSoundReady(true)}catch{}return a};
- useEffect(()=>{try{setNick(localStorage.getItem("brick-nickname")??"");const off=localStorage.getItem("brick-muted")==="true";setMuted(off);getAudio().enabled=!off}catch{}return()=>{audio.current?.stop();void audio.current?.ctx?.close()}},[]);
+ useEffect(()=>{try{setNick(localStorage.getItem("brick-nickname")??"");const off=offline?false:localStorage.getItem("brick-muted")==="true";setMuted(off);getAudio().enabled=!off;if(offline){void getAudio().unlock().then(()=>setSoundReady(true));localStorage.setItem("brick-muted","false")}}catch{}return()=>{audio.current?.stop();void audio.current?.ctx?.close()}},[]);
  useEffect(()=>{const a=getAudio();a.play(stage==="game"?"game":stage==="paused"?"paused":"menu")},[stage]);
+ const resumeAfterDesktopMenu=useRef(false);
+ useEffect(()=>{if(desktopPaused){resumeAfterDesktopMenu.current=activeStage.current==="game";if(resumeAfterDesktopMenu.current)setStage("paused")}else if(resumeAfterDesktopMenu.current){resumeAfterDesktopMenu.current=false;setStage("game")}},[desktopPaused]);
  const move=useCallback((lane:number)=>{const e=engine.current;if(activeStage.current!=="game"||!e)return;const score=e.score;e.move(lane,e.t);if(e.score>score)audio.current?.catch();refresh(v=>v+1)},[]);
  useEffect(()=>{
   const key=(event:KeyboardEvent)=>{if((event.target as HTMLElement).matches("input,textarea"))return;
