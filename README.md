@@ -1,0 +1,48 @@
+# Nu Pogodi SPO LEGENDA
+
+Аркада по мотивам «Ну, погоди!»: четыре желоба, корзина, три жизни, 8-битная музыка и таблица рекордов.
+
+Играть онлайн: https://nu-pogodi-spo-legenda.kislinya.chatgpt.site
+
+## Правила
+- Q / E — слева и справа сверху; A / D — на уровне рук. Работают также стрелки и экранные кнопки.
+- Esc или пробел — пауза.
+- Каждый пойманный красный или синий кирпич даёт 1 очко. Три промаха завершают игру.
+- Последовательность появления: 5 красных, 1 синий, затем повтор.
+- До 100 очков скорость ×1,0; на 100 — ×1,1; на 125 — ×1,2; на 150 — ×1,3. Далее +0,1 каждые 25 очков. Ускоряются новые кирпичи и частота их появления.
+
+## Windows
+Запустите `Nu-Pogodi-SPO-LEGENDA-1.1.0-Windows.exe`. Это автономная версия для Windows 10/11 x64: установка Node.js и интернет для игры не нужны. Рекорды хранятся на компьютере в `%APPDATA%/nu-pogodi-spo-legenda/records.json` и не отправляются в общую таблицу сайта. EXE не имеет платной цифровой подписи издателя.
+
+## Сборка из исходников
+Нужен Node.js 22.13+ и npm.
+
+```sh
+npm ci
+npm --prefix desktop ci
+node desktop/build.mjs
+npm --prefix desktop run package
+```
+
+Готовый EXE: `outputs/windows/`. Если npm не запустил установочный скрипт Electron, выполните `node desktop/node_modules/electron/install.js`.
+
+## Веб-разработка
+```sh
+npm ci
+npm run build
+node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_big_gunslinger.sql
+npm run dev
+```
+
+Сайт использует React, TypeScript, Canvas, Web Audio, Vinext и Cloudflare D1. Общие результаты проверяются повтором партии на сервере. В Windows используется тот же интерфейс и игровой движок; локальная таблица хранится отдельно. Файл `.openai/hosting.json` относится к существующему сайту владельца, для собственного размещения нужны собственные настройки.
+
+## Проверки
+```sh
+node tests/game-engine.test.mjs
+node node_modules/typescript/bin/tsc --noEmit
+node desktop/build.mjs
+node tests/desktop-api.test.cjs
+```
+
+Графика основана на предоставленных пользователем материалах; права на исходные изображения принадлежат их правообладателям. Лицензии включённых библиотек сохраняются в исходниках и дистрибутиве.
+
