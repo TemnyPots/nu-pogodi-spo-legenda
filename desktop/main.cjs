@@ -21,7 +21,7 @@ app.whenReady().then(async()=>{
   try{const bytes=await fs.readFile(file);loaded.push(relative);return new Response(bytes,{headers:{'Content-Type':mime[path.extname(file)]||'application/octet-stream'}})}catch{return new Response('Not found',{status:404})}
  });
  session.defaultSession.setPermissionRequestHandler((_web,_permission,callback)=>callback(false));
- const win=new BrowserWindow({width:1200,height:920,minWidth:600,minHeight:650,show:false,fullscreen:true,backgroundColor:'#f4f7ff',autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
+ const win=new BrowserWindow({width:1200,height:920,minWidth:600,minHeight:650,show:false,fullscreen:true,backgroundColor:'#000000',autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
  win.once('ready-to-show',()=>{if(!smoke)win.show()});
  win.webContents.on('before-input-event',(event,input)=>{
   if(input.type==='keyDown'&&!input.isAutoRepeat&&(input.key==='F11'||(input.alt&&input.key==='Enter'))){event.preventDefault();win.setFullScreen(!win.isFullScreen())}
@@ -31,7 +31,7 @@ app.whenReady().then(async()=>{
  if(smoke){
   const errors=[];
   win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message)});
-  win.webContents.on('did-finish-load',()=>setTimeout(async()=>{await fs.writeFile(path.join(app.getPath('temp'),'legenda-smoke-result.json'),JSON.stringify({loaded,errors,fullscreen:win.isFullScreen()}));app.exit(errors.length?1:0)},6500));
+  win.webContents.on('did-finish-load',()=>setTimeout(async()=>{await fs.writeFile(path.join(app.getPath('temp'),'legenda-smoke-result.json'),JSON.stringify({loaded,errors,fullscreen:win.isFullScreen()}));app.exit(errors.length?1:0)},8500));
  }
  await win.loadURL('legenda://game/index.html');
 });

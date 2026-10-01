@@ -24,3 +24,6 @@ body{background-image:linear-gradient(#08130be0,#08130be0),url("/camp-pixel.png"
 .instructions{padding:14px;background:#0a160ee8;border:1px solid #35482f;border-radius:6px}
 .leaderboard{background-image:linear-gradient(#09160eed,#09160eed),url("/camp-pixel.png");background-size:cover;background-position:center}
 @media(max-width:550px){.brand-emblem{flex-basis:44px;width:44px;height:44px;padding:3px}.masthead{padding:8px;gap:8px}.brand{font-size:12px;letter-spacing:.5px;gap:7px}.sound{font-size:9px;padding:7px}.menu-screen{background-image:linear-gradient(#07120bd9,#07120b80 42%,#07120bf2 72%),url("/camp-pixel.png");background-position:60% center}.art-caption{display:block;writing-mode:horizontal-tb;top:-23px;right:0;padding:5px;font-size:9px;letter-spacing:1px}.instructions{padding:10px}}
+
+.score-stamp{z-index:3;right:5%;bottom:9%;min-width:100px;padding:13px 18px 11px;text-align:center;background:#101c12f5;border:2px solid #d4fa78;box-shadow:5px 5px 0 #020805,0 0 22px #c2ff572b;border-radius:5px;font-size:48px;line-height:1;text-shadow:2px 3px 0 #395022;transform:rotate(-6deg)}
+.score-stamp small{display:inline-block;margin-top:8px;color:#eaffc6;font-weight:700;font-size:11px;letter-spacing:2px;text-shadow:none}
