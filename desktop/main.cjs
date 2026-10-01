@@ -1,0 +1,34 @@
+const {app,BrowserWindow,protocol,session}=require('electron');
+const fs=require('node:fs/promises');
+const path=require('node:path');
+const {createApi}=require('./local-api.cjs');
+protocol.registerSchemesAsPrivileged([{scheme:'legenda',privileges:{standard:true,secure:true,supportFetchAPI:true,corsEnabled:true}}]);
+const smoke=process.argv.includes('--smoke-test');
+if(smoke)app.setPath('userData',path.join(app.getPath('temp'),'legenda-smoke'));
+app.whenReady().then(async()=>{
+ await fs.mkdir(app.getPath('userData'),{recursive:true});
+ const api=createApi(path.join(app.getPath('userData'),'records.json'));
+ const ui=path.join(__dirname,'ui');
+ const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript','.css':'text/css','.png':'image/png','.webp':'image/webp','.svg':'image/svg+xml','.woff2':'font/woff2'};
+ const loaded=[];
+ protocol.handle('legenda',async request=>{
+  const url=new URL(request.url);
+  if(url.host!=='game')return new Response('Forbidden',{status:403});
+  if(url.pathname.startsWith('/api/'))return api(request);
+  const relative=decodeURIComponent(url.pathname==='/'?'/index.html':url.pathname);
+  const file=path.resolve(ui,'.'+relative);
+  if(!file.startsWith(ui+path.sep))return new Response('Forbidden',{status:403});
+  try{const bytes=await fs.readFile(file);loaded.push(relative);return new Response(bytes,{headers:{'Content-Type':mime[path.extname(file)]||'application/octet-stream'}})}catch{return new Response('Not found',{status:404})}
+ });
+ session.defaultSession.setPermissionRequestHandler((_web,_permission,callback)=>callback(false));
+ const win=new BrowserWindow({width:1200,height:920,minWidth:600,minHeight:650,show:!smoke,autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{nodeIntegration:false,contextIsolation:true,sandbox:true}});
+ win.webContents.setWindowOpenHandler(()=>({action:'deny'}));
+ win.webContents.on('will-navigate',(event,url)=>{if(new URL(url).origin!==new URL('legenda://game').origin)event.preventDefault()});
+ if(smoke){
+  const errors=[];
+  win.webContents.on('console-message',(_event,level,message)=>{if(level===3)errors.push(message)});
+  win.webContents.on('did-finish-load',()=>setTimeout(async()=>{await fs.writeFile(path.join(app.getPath('temp'),'legenda-smoke-result.json'),JSON.stringify({loaded,errors}));app.exit(errors.length?1:0)},2000));
+ }
+ await win.loadURL('legenda://game/index.html');
+});
+app.on('window-all-closed',()=>app.quit());

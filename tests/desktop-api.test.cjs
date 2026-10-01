@@ -1,0 +1,20 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const os=require('node:os');
+const path=require('node:path');
+const {createApi}=require('../desktop/local-api.cjs');
+const {Engine}=require('../desktop/engine.cjs');
+(async()=>{
+const dir=fs.mkdtempSync(path.join(os.tmpdir(),'legenda-api-')),file=path.join(dir,'records.json');
+const api=createApi(file);
+const request=(body)=>new Request('legenda://game/api/runs',{method:'POST',body:JSON.stringify(body)});
+const start=await (await api(request({action:'start',nickname:'Test'}))).json();
+const e=new Engine(start.seed);
+for(let t=0;!e.over&&t<120000;t+=10)e.advance(t);
+const saved=await (await api(request({action:'finish',id:start.id,duration:e.t,moves:e.moves}))).json();
+assert.equal(saved.saved,true);assert.equal(saved.score,e.score);
+const afterRestart=createApi(file);
+const rows=await (await afterRestart(new Request('legenda://game/api/leaderboard'))).json();
+assert.deepEqual(rows.rows,[{nickname:'Test',score:e.score}]);
+console.log('PASS: offline start, replay validation, atomic record save and reload');
+})();

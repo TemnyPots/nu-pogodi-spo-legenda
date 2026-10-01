@@ -1,0 +1,18 @@
+{
+  "name": "nu-pogodi-spo-legenda",
+  "version": "1.1.0",
+  "description": "Nu pogodi SPO LEGENDA — автономная аркада",
+  "author": "SPO LEGENDA",
+  "private": true,
+  "main": "main.cjs",
+  "scripts": {"build": "node build.mjs", "package": "electron-builder --win portable --x64 --publish never"},
+  "devDependencies": {"electron": "44.5.1", "electron-builder": "26.15.3"},
+  "build": {
+    "appId": "ru.spolegende.nupogodi",
+    "productName": "Nu Pogodi SPO LEGENDA",
+    "directories": {"output": "../outputs/windows"},
+    "files": ["main.cjs", "local-api.cjs", "engine.cjs", "ui/**/*", "package.json"],
+    "win": {"target": "portable", "signAndEditExecutable": false},
+    "artifactName": "Nu-Pogodi-SPO-LEGENDA-${version}-Windows.exe"
+  }
+}
