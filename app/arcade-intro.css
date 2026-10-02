@@ -1,0 +1,17 @@
+.console-black{position:fixed;inset:0;z-index:1000;background:#000}
+.console-intro{position:fixed;inset:0;z-index:1000;display:grid;place-items:center;overflow:hidden;background:#f4f7ff;color:#0754d6;font-family:Arial,sans-serif}
+.console-intro::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(transparent 0 3px,#041d6d0b 3px 4px)}
+.intro-center{text-align:center;width:100%;animation:intro-reveal .85s cubic-bezier(.16,1,.3,1) both}
+.intro-brand{font-size:clamp(64px,15vw,230px);font-weight:1000;font-style:italic;line-height:1;letter-spacing:-.065em;padding:0 .1em;transform:scaleX(1.04);color:transparent;background:repeating-linear-gradient(to bottom,#0754d6 0 7px,#e7f0ff 7px 9px);background-clip:text;-webkit-background-clip:text;-webkit-text-stroke:2px #0649be;filter:drop-shadow(0 5px 0 #98c5ff);animation:intro-shine 1.6s .8s both}
+.intro-caption{font:700 clamp(12px,1.4vw,19px) monospace;letter-spacing:.42em;margin:35px 0 0;animation:intro-caption .6s .9s both}
+.intro-skip{position:absolute;bottom:70px;border:1px solid #9ab6e7;background:transparent;color:#174d9a;padding:12px 18px;font:12px monospace;letter-spacing:2px;cursor:pointer}
+.intro-skip:focus-visible{outline:3px solid #0754d6;outline-offset:5px}
+.intro-hint{position:absolute;bottom:27px;font:11px monospace;letter-spacing:1px;color:#48638c}
+.desktop-hint{text-align:center;font:11px monospace;color:#a0b68a;padding:8px 12px 0}
+@keyframes intro-reveal{from{opacity:0;transform:scaleX(1.35);filter:blur(7px)}to{opacity:1;transform:scaleX(1);filter:blur(0)}}
+@keyframes intro-shine{0%,100%{filter:drop-shadow(0 5px 0 #98c5ff)}35%{filter:drop-shadow(0 5px 0 #98c5ff) brightness(1.4)}}
+@keyframes intro-caption{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes intro-fadeout{to{opacity:0}}
+@media(prefers-reduced-motion:reduce){.console-intro,.intro-center,.intro-brand,.intro-caption{animation:none}}
+
+.intro-actions{position:absolute;bottom:65px;display:flex;gap:12px;flex-wrap:wrap;justify-content:center;padding:0 16px}.intro-actions .intro-skip{position:static}.intro-sound{background:#0754d6!important;color:white!important}.intro-status{position:absolute;bottom:125px;font:12px monospace;text-align:center;padding:0 20px;color:#48638c}.exit-dialog{border:1px solid #586743!important;border-radius:0!important;background:#172218!important;color:#c5cebc!important;padding:36px!important;gap:18px!important;box-shadow:8px 8px 0 #000a!important;text-align:center}.exit-dialog h2{font:700 clamp(24px,5vw,34px) monospace;color:#d4fa7a}.exit-dialog p{color:#b4bea9;font-size:14px}.exit-dialog small{font:10px monospace;letter-spacing:1px;color:#8d9b80}.exit-dialog .primary,.exit-dialog .secondary{width:100%;margin:0}
