@@ -21,7 +21,7 @@ app.whenReady().then(async()=>{
   try{const bytes=await fs.readFile(file);loaded.push(relative);return new Response(bytes,{headers:{'Content-Type':mime[path.extname(file)]||'application/octet-stream'}})}catch{return new Response('Not found',{status:404})}
  });
  session.defaultSession.setPermissionRequestHandler((_web,_permission,callback)=>callback(false));
- const win=new BrowserWindow({width:1200,height:920,minWidth:600,minHeight:650,show:false,fullscreen:true,backgroundColor:'#000000',autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{preload:path.join(__dirname,'preload.cjs'),additionalArguments:smoke?['--legenda-smoke']:[],nodeIntegration:false,contextIsolation:true,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
+ const win=new BrowserWindow({icon:path.join(__dirname,'assets/wolf-icon.ico'),width:1200,height:920,minWidth:600,minHeight:650,show:false,fullscreen:true,backgroundColor:'#000000',autoHideMenuBar:true,title:'Nu Pogodi SPO LEGENDA',webPreferences:{preload:path.join(__dirname,'preload.cjs'),additionalArguments:smoke?['--legenda-smoke']:[],nodeIntegration:false,contextIsolation:true,sandbox:true,autoplayPolicy:'no-user-gesture-required'}});
  win.once('ready-to-show',()=>{if(!smoke)win.show()});
  ipcMain.on('quit-game',event=>{
   if(event.sender!==win.webContents||event.senderFrame!==win.webContents.mainFrame)return;
