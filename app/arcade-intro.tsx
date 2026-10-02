@@ -6,7 +6,7 @@ export default function ArcadeIntro({onDone}:{offline:boolean;onDone:(context:Au
  const [revealed,setRevealed]=useState(false);
  const done=useRef(onDone);done.current=onDone;
  useEffect(()=>{
-  let context:AudioContext|null=null,source:AudioBufferSourceNode|null=null,disposed=false,transferred=false,started=false,booted=false,voiceDue=false;
+  let context:AudioContext|null=null,source:AudioBufferSourceNode|null=null,disposed=false,transferred=false,started=false,booted=false,soundDue=false;
   const timers:ReturnType<typeof setTimeout>[]=[];
   const later=(fn:()=>void,ms:number)=>timers.push(setTimeout(fn,ms));
   const finish=()=>{if(disposed||transferred)return;transferred=true;source?.stop();done.current(context)};
@@ -18,7 +18,7 @@ export default function ArcadeIntro({onDone}:{offline:boolean;onDone:(context:Au
    const audio=context;
    const buffer=fetch('/legenda-intro.wav').then(r=>{if(!r.ok)throw Error('Intro unavailable');return r.arrayBuffer()}).then(data=>audio.decodeAudioData(data)).catch(()=>null);
    play=()=>{
-    if(started||disposed||transferred||!voiceDue)return;
+    if(started||disposed||transferred||!soundDue)return;
     const resumed=audio.resume().catch(()=>{});
     void Promise.all([buffer,resumed]).then(([decoded])=>{
      if(disposed||transferred||started||!decoded||audio.state!=='running')return;
@@ -27,7 +27,7 @@ export default function ArcadeIntro({onDone}:{offline:boolean;onDone:(context:Au
      console.info('LEGENDA intro audio started');
     });
    };
-   later(()=>{voiceDue=true;play()},2850);
+   later(()=>{soundDue=true;play()},2850);
   };
   // A normal tap/key can unlock browser audio without interrupting the intro.
   const unlock=()=>{if(context)void context.resume().then(()=>play()).catch(()=>{})};
