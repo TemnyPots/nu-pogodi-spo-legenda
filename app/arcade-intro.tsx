@@ -31,9 +31,11 @@ export default function ArcadeIntro({onDone}:{offline:boolean;onDone:(context:Au
   };
   // A normal tap/key can unlock browser audio without interrupting the intro.
   const unlock=()=>{if(context)void context.resume().then(()=>play()).catch(()=>{})};
+  const visibility=(event:Event)=>{const hidden=(event as CustomEvent<{hidden:boolean}>).detail.hidden;if(hidden)void context?.suspend();else if(!document.hidden&&!transferred)void context?.resume().then(()=>play()).catch(()=>{})};
+  window.addEventListener('legenda-visibility',visibility);
   boot();document.addEventListener('visibilitychange',boot);
   window.addEventListener('pointerdown',unlock);window.addEventListener('keydown',unlock);
-  return()=>{disposed=true;timers.forEach(clearTimeout);source?.stop();if(!transferred)void context?.close();document.removeEventListener('visibilitychange',boot);window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock)};
+  return()=>{disposed=true;timers.forEach(clearTimeout);source?.stop();if(!transferred)void context?.close();document.removeEventListener('visibilitychange',boot);window.removeEventListener('legenda-visibility',visibility);window.removeEventListener('pointerdown',unlock);window.removeEventListener('keydown',unlock)};
  },[]);
  return !revealed?<section className="console-black" aria-label="Запуск игры"/>:<section className="console-intro" aria-label="Заставка LEGENDA"><div className="intro-center"><div className="intro-brand" aria-label="LEGENDA">LEGENDA</div><p className="intro-caption">SPO LEGENDA PRESENTS</p></div></section>;
 }
